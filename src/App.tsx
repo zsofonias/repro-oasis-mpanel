@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import styled from 'styled-components';
+// import GlobalStyles from './styles/GlobalStyles';
+import Button from './components/ui/Button';
+import Input from './components/ui/Input';
+import Heading from './components/ui/Heading';
+import Row from './components/ui/Row';
+
+const StyledApp = styled.div`
+  padding: 20px;
+`;
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      {/* <GlobalStyles /> */}
+      <StyledApp>
+        <Row type="horizontal">
+          <Heading as="h1">Hello Oasis</Heading>
+          <div>
+            <Heading as="h2">Hello Oasis</Heading>
+            <Button onClick={() => alert('Check In')}>Check In</Button>
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={() => alert('Check Out')}
+            >
+              Check In
+            </Button>
+          </div>
+        </Row>
 
-export default App
+        <Row type="vertical">
+          <Heading as="h3">Hello Oasis</Heading>
+          <form>
+            <Input type="number" min={1} placeholder="Number of guests" />
+            <Input type="number" min={1} placeholder="Number of guests" />
+          </form>
+        </Row>
+      </StyledApp>
+    </>
+  );
+}
+export default App;
