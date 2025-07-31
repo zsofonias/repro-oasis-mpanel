@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 
 import { createUpdateCabin } from '@/services/apiCabins';
 
-import type { ICabin, ICabinFormData } from './types/cabin';
+import type { ICabinFormData } from './types/cabin';
 
 import Input from '@/components/ui/Input';
 import Form from '@/components/ui/Form';
@@ -13,34 +13,17 @@ import FileInput from '@/components/ui/FileInput';
 import Textarea from '@/components/ui/Textarea';
 import FormRow from '@/components/ui/FormRow';
 
-type Props = {
-  cabin?: ICabin;
-};
-
-function CreateCabinForm({ cabin }: Props) {
-  const isEdit = !!cabin?.id;
-
+function CreateCabinForm() {
   const {
     register,
     handleSubmit,
     getValues,
     formState: { errors: formErrors },
     reset: resetForm,
-  } = useForm<ICabinFormData>({
-    defaultValues: isEdit
-      ? {
-          name: cabin.name,
-          max_capacity: cabin.maxCapacity,
-          regular_price: cabin.regularPrice,
-          discount: cabin.discount,
-          description: cabin.description,
-          image: cabin.image,
-        }
-      : {},
-  });
+  } = useForm<ICabinFormData>();
   const queryClient = useQueryClient();
 
-  const { mutate: createCabin, isPending: isCreating } = useMutation({
+  const { mutate, isPending: isCreating } = useMutation({
     mutationFn: createUpdateCabin,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cabins'] });
@@ -52,23 +35,8 @@ function CreateCabinForm({ cabin }: Props) {
     },
   });
 
-  const { mutate: updateCabin, isPending: isUpdating } = useMutation({
-    mutationFn: (cabinUpdated: ICabinFormData) =>
-      createUpdateCabin(cabinUpdated, cabin?.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cabins'] });
-      toast.success('Cabin updated successfully');
-      resetForm();
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
-
-  const formLoading = isCreating || isUpdating;
-
   function onSubmit(data: ICabinFormData) {
-    isEdit ? updateCabin(data) : createCabin(data);
+    mutate(data);
   }
 
   function onError(errors: FieldErrors<ICabinFormData>) {
@@ -81,7 +49,7 @@ function CreateCabinForm({ cabin }: Props) {
         <Input
           type="text"
           id="name"
-          disabled={formLoading}
+          disabled={isCreating}
           {...register('name', {
             required: 'This field is required',
           })}
@@ -95,7 +63,7 @@ function CreateCabinForm({ cabin }: Props) {
         <Input
           type="number"
           id="max_capacity"
-          disabled={formLoading}
+          disabled={isCreating}
           {...register('max_capacity', {
             valueAsNumber: true,
             required: 'This field is required',
@@ -111,7 +79,7 @@ function CreateCabinForm({ cabin }: Props) {
         <Input
           type="number"
           id="regular_price"
-          disabled={formLoading}
+          disabled={isCreating}
           {...register('regular_price', {
             valueAsNumber: true,
             required: 'This field is required',
@@ -123,7 +91,7 @@ function CreateCabinForm({ cabin }: Props) {
         <Input
           type="number"
           id="discount"
-          disabled={formLoading}
+          disabled={isCreating}
           defaultValue={0}
           {...register('discount', {
             valueAsNumber: true,
@@ -156,19 +124,19 @@ function CreateCabinForm({ cabin }: Props) {
         <FileInput
           id="image"
           accept="image/*"
-          disabled={formLoading}
+          disabled={isCreating}
           {...register('image', {
-            required: isEdit ? false : 'This field is required',
+            required: 'This field is required',
           })}
         />
       </FormRow>
 
       <FormRow>
-        <Button variant="secondary" type="reset" disabled={formLoading}>
+        <Button variant="secondary" type="reset" disabled={isCreating}>
           Cancel
         </Button>
-        <Button disabled={formLoading}>
-          {isEdit ? 'Update cabin' : 'Add cabin'}
+        <Button disabled={isCreating}>
+          {isCreating ? 'Adding cabin...' : 'Add cabin'}
         </Button>
       </FormRow>
     </Form>
