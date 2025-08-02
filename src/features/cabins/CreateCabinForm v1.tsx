@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 
 import { createUpdateCabin } from '@/services/apiCabins';
 
-import type { ICabinFormData } from './types/cabin';
+import type { ICabinFormData } from './types/cabin.type';
 
 import Input from '@/components/ui/Input';
 import Form from '@/components/ui/Form';

@@ -1,5 +1,8 @@
 import supabase, { supabaseUrl } from './supabase';
-import type { ICabin, ICabinFormData } from '@/features/cabins/types/cabin';
+import type {
+  ICabin,
+  ICabinFormData,
+} from '@/features/cabins/types/cabin.type';
 
 export async function getCabins(): Promise<ICabin[]> {
   const { data, error } = await supabase.from('cabins').select('*');

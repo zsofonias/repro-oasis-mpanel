@@ -5,7 +5,7 @@ import { HiPencil, HiSquare2Stack, HiTrash } from 'react-icons/hi2';
 import { useCreateCabin } from './hooks/useCreateCabin';
 import { useDeleteCabin } from './hooks/useDeleteCabin';
 import { formatCurrency } from '@/utils/helpers';
-import type { ICabin } from './types/cabin';
+import type { ICabin } from './types/cabin.type';
 
 import CreateCabinForm from './CreateCabinForm';
 

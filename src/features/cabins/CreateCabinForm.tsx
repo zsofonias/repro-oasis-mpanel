@@ -2,7 +2,7 @@ import { useForm, type FieldErrors } from 'react-hook-form';
 
 import { useCreateCabin } from './hooks/useCreateCabin';
 import { useUpdateCabin } from './hooks/useUpdateCabin';
-import type { ICabin, ICabinFormData } from './types/cabin';
+import type { ICabin, ICabinFormData } from './types/cabin.type';
 
 import Input from '@/components/ui/Input';
 import Form from '@/components/ui/Form';
