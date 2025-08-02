@@ -1,9 +1,7 @@
 import { useForm, type FieldErrors } from 'react-hook-form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'react-hot-toast';
 
-import { createUpdateCabin } from '@/services/apiCabins';
-
+import { useCreateCabin } from './hooks/useCreateCabin';
+import { useUpdateCabin } from './hooks/useUpdateCabin';
 import type { ICabin, ICabinFormData } from './types/cabin';
 
 import Input from '@/components/ui/Input';
@@ -15,9 +13,10 @@ import FormRow from '@/components/ui/FormRow';
 
 type Props = {
   cabin?: ICabin;
+  onCancel?: () => void;
 };
 
-function CreateCabinForm({ cabin }: Props) {
+function CreateCabinForm({ cabin, onCancel }: Props) {
   const isEdit = !!cabin?.id;
 
   const {
@@ -38,37 +37,19 @@ function CreateCabinForm({ cabin }: Props) {
         }
       : {},
   });
-  const queryClient = useQueryClient();
-
-  const { mutate: createCabin, isPending: isCreating } = useMutation({
-    mutationFn: createUpdateCabin,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cabins'] });
-      toast.success('Cabin created successfully');
-      resetForm();
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
-
-  const { mutate: updateCabin, isPending: isUpdating } = useMutation({
-    mutationFn: (cabinUpdated: ICabinFormData) =>
-      createUpdateCabin(cabinUpdated, cabin?.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cabins'] });
-      toast.success('Cabin updated successfully');
-      resetForm();
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
+  const { mutate: createCabin, isPending: isCreating } = useCreateCabin();
+  const { mutate: updateCabin, isPending: isUpdating } = useUpdateCabin();
 
   const formLoading = isCreating || isUpdating;
 
   function onSubmit(data: ICabinFormData) {
-    isEdit ? updateCabin(data) : createCabin(data);
+    isEdit
+      ? updateCabin({ ...data, id: cabin.id })
+      : createCabin(data, {
+          onSuccess: () => {
+            resetForm();
+          },
+        });
   }
 
   function onError(errors: FieldErrors<ICabinFormData>) {
@@ -164,7 +145,15 @@ function CreateCabinForm({ cabin }: Props) {
       </FormRow>
 
       <FormRow>
-        <Button variant="secondary" type="reset" disabled={formLoading}>
+        <Button
+          variant="secondary"
+          type="reset"
+          onClick={(e) => {
+            e.preventDefault();
+            onCancel?.();
+          }}
+          disabled={formLoading}
+        >
           Cancel
         </Button>
         <Button disabled={formLoading}>

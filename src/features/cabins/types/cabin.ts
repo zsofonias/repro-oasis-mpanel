@@ -10,6 +10,7 @@ export interface ICabin {
 }
 
 export interface ICabinFormData {
+  id?: string;
   name: string;
   max_capacity: number;
   regular_price: number;

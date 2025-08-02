@@ -21,7 +21,7 @@ export async function getCabins(): Promise<ICabin[]> {
   }));
 }
 
-export async function createUpdateCabin(cabin: ICabinFormData, id?: string) {
+export async function createUpdateCabin(cabin: ICabinFormData) {
   let image = typeof cabin.image === 'string' ? cabin.image : '';
 
   if (cabin?.image?.length && typeof cabin.image !== 'string') {
@@ -42,11 +42,11 @@ export async function createUpdateCabin(cabin: ICabinFormData, id?: string) {
 
   let query;
 
-  if (id) {
+  if (cabin.id) {
     query = supabase
       .from('cabins')
       .update({ ...cabin, image })
-      .eq('id', id)
+      .eq('id', cabin.id)
       .select()
       .single();
   } else {
