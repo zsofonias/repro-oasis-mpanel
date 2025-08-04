@@ -16,7 +16,7 @@ type Props = {
   onCancel?: () => void;
 };
 
-function CreateCabinForm({ cabin, onCancel }: Props) {
+function CabinForm({ cabin, onCancel }: Props) {
   const isEdit = !!cabin?.id;
 
   const {
@@ -58,7 +58,10 @@ function CreateCabinForm({ cabin, onCancel }: Props) {
   }
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form
+      onSubmit={handleSubmit(onSubmit, onError)}
+      type={onCancel ? 'modal' : 'regular'}
+    >
       <FormRow label="Cabin name" error={formErrors.name?.message}>
         <Input
           type="text"
@@ -165,4 +168,4 @@ function CreateCabinForm({ cabin, onCancel }: Props) {
   );
 }
 
-export default CreateCabinForm;
+export default CabinForm;
