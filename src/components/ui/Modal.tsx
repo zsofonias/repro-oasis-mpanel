@@ -1,6 +1,16 @@
+import {
+  cloneElement,
+  createContext,
+  isValidElement,
+  useContext,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import { HiXMark } from 'react-icons/hi2';
+import { useOutsideElementClick } from '@/hooks/useOutsideElementClick';
 
 const StyledModal = styled.div`
   position: fixed;
@@ -51,23 +61,96 @@ const Button = styled.button`
   }
 `;
 
-type Props = {
-  children: React.ReactNode;
-  onClose: () => void;
+type ModalProps = {
+  children: ReactNode;
 };
 
-function Modal({ children, onClose }: Props) {
+type OpenProps = {
+  children: ReactElement<{ onClick: () => void }>;
+  opens: string;
+};
+
+type WindowProps = {
+  // children: ReactNode;
+  children: ReactElement<{ onCloseModal: () => void }>;
+  name: string;
+};
+
+interface IModalContext {
+  openName: string;
+  close: () => void;
+  open: (target: string) => void;
+}
+
+const ModalContext = createContext<IModalContext>({
+  openName: '',
+  close: () => {},
+  open: () => {},
+});
+
+function Modal({ children }: ModalProps) {
+  const [openName, setOpenName] = useState('');
+
+  const open = (name: string) => setOpenName(name);
+  const close = () => setOpenName('');
+
+  return (
+    <ModalContext.Provider value={{ openName, close, open }}>
+      {children}
+    </ModalContext.Provider>
+  );
+}
+
+function Open({ children, opens: openName }: OpenProps) {
+  const { open } = useContext(ModalContext);
+  return isValidElement(children)
+    ? cloneElement(children, { onClick: () => open(openName) })
+    : null;
+}
+
+function Window({ children, name }: WindowProps) {
+  const { openName, close } = useContext(ModalContext);
+
+  const ref = useOutsideElementClick<HTMLDivElement>(close);
+
+  if (name !== openName) return null;
+
   return createPortal(
     <Overlay>
-      <StyledModal>
-        <Button onClick={onClose}>
+      <StyledModal ref={ref}>
+        <Button onClick={close}>
           <HiXMark />
         </Button>
-        <div>{children}</div>
+        <div>
+          {/* {children} */}
+          {cloneElement(children, { onCloseModal: close })}
+        </div>
       </StyledModal>
     </Overlay>,
     document.body
   );
 }
+
+Modal.Open = Open;
+Modal.Window = Window;
+
+// type ModalProps = {
+//   children: ReactNode;
+//   onClose: () => void;
+// };
+
+// function Modal({ children, onClose }: Props) {
+//   return createPortal(
+//     <Overlay>
+//       <StyledModal>
+//         <Button onClick={onClose}>
+//           <HiXMark />
+//         </Button>
+//         <div>{children}</div>
+//       </StyledModal>
+//     </Overlay>,
+//     document.body
+//   );
+// }
 
 export default Modal;

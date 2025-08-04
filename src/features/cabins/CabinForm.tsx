@@ -13,10 +13,10 @@ import FormRow from '@/components/ui/FormRow';
 
 type Props = {
   cabin?: ICabin;
-  onCancel?: () => void;
+  onCloseModal?: () => void;
 };
 
-function CabinForm({ cabin, onCancel }: Props) {
+function CabinForm({ cabin, onCloseModal }: Props) {
   const isEdit = !!cabin?.id;
 
   const {
@@ -48,7 +48,7 @@ function CabinForm({ cabin, onCancel }: Props) {
       : createCabin(data, {
           onSuccess: () => {
             resetForm();
-            onCancel?.();
+            onCloseModal?.();
           },
         });
   }
@@ -60,7 +60,7 @@ function CabinForm({ cabin, onCancel }: Props) {
   return (
     <Form
       onSubmit={handleSubmit(onSubmit, onError)}
-      type={onCancel ? 'modal' : 'regular'}
+      type={onCloseModal ? 'modal' : 'regular'}
     >
       <FormRow label="Cabin name" error={formErrors.name?.message}>
         <Input
@@ -154,7 +154,7 @@ function CabinForm({ cabin, onCancel }: Props) {
           type="reset"
           onClick={(e) => {
             e.preventDefault();
-            onCancel?.();
+            onCloseModal?.();
           }}
           disabled={formLoading}
         >
