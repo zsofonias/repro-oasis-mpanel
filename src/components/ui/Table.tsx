@@ -1,3 +1,4 @@
+import { createContext, useContext, type ReactNode } from 'react';
 import styled from 'styled-components';
 
 const StyledTable = styled.div`
@@ -9,7 +10,11 @@ const StyledTable = styled.div`
   overflow: hidden;
 `;
 
-const CommonRow = styled.div`
+type CommonRowProps = {
+  columns: string;
+};
+
+const CommonRow = styled.div<CommonRowProps>`
   display: grid;
   grid-template-columns: ${(props) => props.columns};
   column-gap: 2.4rem;
@@ -58,3 +63,76 @@ const Empty = styled.p`
   text-align: center;
   margin: 2.4rem;
 `;
+
+interface ITableContext {
+  columns: string;
+}
+
+const TableContext = createContext<ITableContext>({
+  columns: '',
+});
+
+type TableProps = {
+  columns: string;
+  children: ReactNode;
+};
+
+function Table({ columns, children }: TableProps) {
+  return (
+    <TableContext.Provider value={{ columns }}>
+      <StyledTable role="table">{children}</StyledTable>
+    </TableContext.Provider>
+  );
+}
+
+type HeaderProps = {
+  children: ReactNode;
+};
+
+function Header({ children }: HeaderProps) {
+  const { columns } = useContext(TableContext);
+  return (
+    <StyledHeader role="row" columns={columns} as="header">
+      {children}
+    </StyledHeader>
+  );
+}
+
+type RowProps = {
+  children: ReactNode;
+};
+
+function Row({ children }: RowProps) {
+  const { columns } = useContext(TableContext);
+  return (
+    <StyledRow role="row" columns={columns}>
+      {children}
+    </StyledRow>
+  );
+}
+
+// type BodyProps = {
+//   children: ReactNode;
+// };
+
+// function Body({ children }: BodyProps) {
+//   return <StyledBody>{children}</StyledBody>;
+// }
+
+type BodyProps<T> = {
+  data: T[] | undefined;
+  render: (item: T) => ReactNode;
+};
+
+function Body<T>({ data, render }: BodyProps<T>) {
+  if (!data || !data.length) return <Empty>No data to display</Empty>;
+
+  return <StyledBody>{data.map(render)}</StyledBody>;
+}
+
+Table.Header = Header;
+Table.Row = Row;
+Table.Body = Body;
+Table.Footer = Footer;
+
+export default Table;
