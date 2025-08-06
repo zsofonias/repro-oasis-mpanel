@@ -86,28 +86,28 @@ function CabinRow({ cabin }: Props) {
       ) : (
         <span>&mdash;</span>
       )}
+      <div style={{ display: 'flex', gap: '0.8rem' }}>
+        <button onClick={handleDuplicate} disabled={isCreating}>
+          <HiSquare2Stack />
+        </button>
 
-      <div>
         <Modal>
-          <Menus.Menu>
-            <Menus.Toggle id={cabin.id} />
-            <Menus.List id={cabin.id}>
-              <Modal.Open opens="cabin-form">
-                <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
-              </Modal.Open>
-              <Menus.Button icon={<HiSquare2Stack />} onClick={handleDuplicate}>
-                Duplicate
-              </Menus.Button>
-              <Modal.Open opens="delete-cabin">
-                <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
-              </Modal.Open>
-            </Menus.List>
-          </Menus.Menu>
-
+          <Modal.Open opens="cabin-form">
+            <button>
+              <HiPencil />
+            </button>
+          </Modal.Open>
           <Modal.Window name="cabin-form">
             <CabinForm cabin={cabin} />
           </Modal.Window>
+        </Modal>
 
+        <Modal>
+          <Modal.Open opens="delete-cabin">
+            <button>
+              <HiTrash />
+            </button>
+          </Modal.Open>
           <Modal.Window name="delete-cabin">
             <ConfirmDelete
               resourceName="cabin"
@@ -116,6 +116,17 @@ function CabinRow({ cabin }: Props) {
             />
           </Modal.Window>
         </Modal>
+
+        <Menus.Menu>
+          <Menus.Toggle id={cabin.id} />
+          <Menus.List id={cabin.id}>
+            <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
+            <Menus.Button icon={<HiSquare2Stack />} onClick={handleDuplicate}>
+              Duplicate
+            </Menus.Button>
+            <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
+          </Menus.List>
+        </Menus.Menu>
       </div>
       {/* </TableRow> */}
     </Table.Row>
